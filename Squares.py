@@ -83,7 +83,3 @@ class Squares:
                 self.level_up = 10 * (self.level + 1)
         else:
             self.shape.render_current_frame(self.pixels)
-
-
-if __name__ == "__main__":
-    Squares()
