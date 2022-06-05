@@ -11,6 +11,16 @@ class Squares:
         self.hit_box = [list(0 for column in range(self.width)) for row in range(self.height)]
         self.shape = None
         self.letter_bag = ["O", "I", "J", "L", "S", "T", "Z"]
+        self.score = 0
+        self.level = 0
+        self.level_up = 10 * (self.level + 1)
+        self.row_counter = 0
+
+    def get_score(self):
+        return self.score
+
+    def get_level(self):
+        return self.level
 
     def get_pixels(self):
         return self.pixels
@@ -58,13 +68,19 @@ class Squares:
         self.shape.render_current_frame(self.pixels)
 
     def move_down(self):
+        if self.shape is None:
+            return None
         self.shape.clear_prev_frame(self.pixels)
         if not self.shape.move_down():
             self.shape.settle(self.pixels)
-            # Call row clear detection!
-            self.shape.clear_rows(self.pixels)
-            # De-spawn piece
+            rows = self.shape.clear_rows(self.pixels)
             self.shape = None
+            self.score += (0, 40, 100, 300, 1200)[rows] * (self.level + 1)
+            self.row_counter += rows
+            if self.row_counter >= self.level_up:
+                self.row_counter -= self.level_up
+                self.level += 1
+                self.level_up = 10 * (self.level + 1)
         else:
             self.shape.render_current_frame(self.pixels)
 

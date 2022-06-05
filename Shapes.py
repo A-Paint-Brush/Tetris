@@ -80,7 +80,6 @@ class Shape:
                     display_board[row][column] = self.color
 
     def detect_collision(self, pixels):
-        # 0: Not colliding, 1: Wall Kick Required, 2:Too low, 3: Colliding pixels
         for row in range(self.y, self.y + self.length):
             for column in range(self.x, self.x + self.length):
                 if pixels[row - self.y][column - self.x] == 1:
@@ -97,23 +96,20 @@ class Shape:
         return 0, None
 
     def clear_rows(self, display_board):
-        rows_cleared = 0
         row_cleared = False
         for row in range(self.board_size[1] - 1, -1, -1):
             if all(self.hit_box[row]):
-                # Move all rows above this one down
                 for i in range(row, 0, -1):
                     self.hit_box[i] = self.hit_box[i - 1]
                     display_board[i] = display_board[i - 1]
                 self.hit_box[0] = [0 for i in range(self.board_size[0])]
                 display_board[0] = [Colors.display_colors["grey"] for i in range(self.board_size[0])]
-                print("Row cleared!")
                 row_cleared = True
-                rows_cleared += 1
                 break
         if row_cleared:
-            self.clear_rows(display_board)
-        return rows_cleared
+            return 1 + self.clear_rows(display_board)
+        else:
+            return 0
 
     def rotate_right(self, no_clip=False):
         rotated = [list(0 for column in range(self.length)) for row in range(self.length)]
@@ -127,7 +123,6 @@ class Shape:
         if collision[0] in (2, 3):
             return False
         elif collision[0] == 1:
-            print("wall kick")
             if (self.move_right, self.move_left)[collision[1]](rotated):
                 self.pixels = rotated
                 return True
