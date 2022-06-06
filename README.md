@@ -2,6 +2,8 @@
 
 This is a simple Tetris game made in Python. The background music was downloaded from [archive.org](https://archive.org/details/TetrisThemeMusic) .
 
+![image](https://user-images.githubusercontent.com/96622265/172145796-f4b35c2a-b008-4ca7-bac3-02751f686769.png)
+
 ### Controls
 
 Left and Right arrow keys: Move the falling tetromino  
