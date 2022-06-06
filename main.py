@@ -1,7 +1,8 @@
+import os
 import pygame
 import Squares
+import Menu
 import Colors
-# TODO: Add pause menu
 
 
 class Display:
@@ -13,6 +14,7 @@ class Display:
         self.frame_delay = 30
         self.key_repeat = 0
         self.key_delay = 5
+        self.pause_menu = Menu.Menu()
         self.mode = "title"
         self.squares = Squares.Squares()
         pygame.init()
@@ -20,6 +22,8 @@ class Display:
         clock = pygame.time.Clock()
         font1 = pygame.font.SysFont("simhei", 40)
         font2 = pygame.font.SysFont("simhei", 70)
+        background_music = pygame.mixer.Sound(os.path.normpath("./Sounds/Tetris.ogg"))
+        background_music.play(-1)
         self.root = pygame.display.set_mode(self.resolution, pygame.RESIZABLE)
         while game_run:
             clock.tick(60)
@@ -70,44 +74,71 @@ class Display:
                         if resize:
                             pygame.display.set_mode((w, h), pygame.RESIZABLE)
                     elif event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_LEFT:
-                            self.key_repeat = 1
-                            self.key_delay = 5
-                        elif event.key == pygame.K_RIGHT:
-                            self.key_repeat = 2
-                            self.key_delay = 5
-                        elif event.key == pygame.K_UP or event.key == pygame.K_x:
-                            self.squares.rotate_right()
-                        elif event.key == pygame.K_DOWN:
-                            self.frame_delay = 3
-                            self.frame_count = 0
+                        if not self.pause_menu.is_paused():
+                            if event.key == pygame.K_LEFT:
+                                self.key_repeat = 1
+                                self.key_delay = 5
+                            elif event.key == pygame.K_RIGHT:
+                                self.key_repeat = 2
+                                self.key_delay = 5
+                            elif event.key == pygame.K_UP or event.key == pygame.K_x:
+                                self.squares.rotate_right()
+                            elif event.key == pygame.K_DOWN:
+                                self.frame_delay = 3
+                                self.frame_count = 0
                     elif event.type == pygame.KEYUP:
-                        if event.key == pygame.K_LEFT:
-                            if self.key_repeat == 1:
-                                self.key_repeat = 0
-                        elif event.key == pygame.K_RIGHT:
-                            if self.key_repeat == 2:
-                                self.key_repeat = 0
-                        elif event.key == pygame.K_DOWN:
-                            self.frame_delay = 30
-                            self.frame_count = 30
+                        if not self.pause_menu.is_paused():
+                            if event.key == pygame.K_LEFT:
+                                if self.key_repeat == 1:
+                                    self.key_repeat = 0
+                            elif event.key == pygame.K_RIGHT:
+                                if self.key_repeat == 2:
+                                    self.key_repeat = 0
+                            elif event.key == pygame.K_DOWN:
+                                self.frame_delay = 30
+                                self.frame_count = 30
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        x, y = pygame.mouse.get_pos()
+                        if self.pause_menu.is_paused():
+                            pos = self.pause_menu.get_btn_hit_box()
+                            if pos[0] <= x <= pos[1] and pos[2] <= y <= pos[3]:
+                                self.pause_menu.toggle_pause()
+                        else:
+                            if 8 <= x <= 28 and self.resolution[1] - 27 <= y <= self.resolution[1] - 13:
+                                self.pause_menu.toggle_pause()
                 self.root.fill(Colors.display_colors["white"])
-                if not self.squares.has_shape():
-                    if self.squares.spawn_new():
-                        self.mode = "gg"
-                if self.key_repeat != 0:
-                    self.key_delay -= 1
-                    if self.key_delay <= 0:
-                        self.key_delay = 5
-                        (self.squares.move_left, self.squares.move_right)[self.key_repeat - 1]()
-                self.frame_count -= 1
-                if self.frame_count <= 0:
-                    self.frame_count = self.frame_delay
-                    self.squares.move_down()
+                if not self.pause_menu.is_paused():
+                    if not self.squares.has_shape():
+                        if self.squares.spawn_new():
+                            self.mode = "gg"
+                    if self.key_repeat != 0:
+                        self.key_delay -= 1
+                        if self.key_delay <= 0:
+                            self.key_delay = 5
+                            (self.squares.move_left, self.squares.move_right)[self.key_repeat - 1]()
+                    self.frame_count -= 1
+                    if self.frame_count <= 0:
+                        self.frame_count = self.frame_delay
+                        self.squares.move_down()
                 self.draw_pixels()
                 self.root.blit(font1.render(f"Score: {self.squares.get_score()}", True, Colors.display_colors["black"]), (20, 5))
                 text = f"Level: {self.squares.get_level()}"
                 self.root.blit(font1.render(text, True, Colors.display_colors["black"]), (self.resolution[0] - font1.size(text)[0] - 20, 5))
+                pygame.draw.rect(self.root, Colors.display_colors["black"], [8, self.resolution[1] - 27, 20, 5], 0)
+                pygame.draw.rect(self.root, Colors.display_colors["black"], [8, self.resolution[1] - 20, 20, 5], 0)
+                pygame.draw.rect(self.root, Colors.display_colors["black"], [8, self.resolution[1] - 13, 20, 5], 0)
+                if self.pause_menu.is_paused():
+                    self.key_repeat = 0
+                    self.key_delay = 5
+                    self.frame_delay = 30
+                    self.pause_menu.relocate(self.resolution, font1)
+                    overlay_surface = pygame.Surface(self.resolution, pygame.SRCALPHA)
+                    overlay_surface.fill(Colors.display_colors["transparent"])
+                    self.root.blit(overlay_surface, (0, 0))
+                    pygame.draw.rect(self.root, Colors.display_colors["grey"], self.pause_menu.get_rect(), 0)
+                    self.root.blit(font1.render("Game Paused!", True, Colors.display_colors["black"]), self.pause_menu.get_text())
+                    pygame.draw.rect(self.root, Colors.display_colors["orange"], self.pause_menu.get_button(), 0)
+                    self.root.blit(font1.render("Continue", True, Colors.display_colors["black"]), self.pause_menu.get_label())
                 pygame.display.update()
             elif self.mode == "gg":
                 for event in pygame.event.get():
