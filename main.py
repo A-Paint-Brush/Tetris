@@ -27,6 +27,7 @@ class Display:
         self.mode = "title"
         self.update_rect = []
         self.first_frame = True
+        self.iconify_state = True
         self.squares = Squares.Squares()
         pygame.init()
         clock = pygame.time.Clock()
@@ -64,6 +65,9 @@ class Display:
                                 self.resolution[1] - 70 <= y <= self.resolution[1] - 70 + 60:
                             self.mode = "game"
                     self.root.fill(Colors.display_colors["white"])
+                    if pygame.key.get_focused() and (not self.iconify_state):
+                        self.first_frame = True
+                    self.iconify_state = pygame.key.get_focused()
                     title = "Tetris"
                     text2 = "Start"
                     self.root.blit(font2.render(title, True, Colors.display_colors["black"]), (round(self.resolution[0] / 2 - font2.size(title)[0] / 2), 20))
@@ -140,9 +144,13 @@ class Display:
                                 self.pause_menu.toggle_pause()
                                 self.first_frame = True
                 self.root.fill(Colors.display_colors["white"])
+                if pygame.key.get_focused() and (not self.iconify_state):
+                    self.first_frame = True
+                self.iconify_state = pygame.key.get_focused()
                 if not self.pause_menu.is_paused():
-                    if not pygame.key.get_focused():
+                    if not self.iconify_state:
                         self.pause_menu.set_pause()
+                        self.first_frame = True
                     if not self.squares.has_shape():
                         if self.squares.spawn_new():
                             self.mode = "gg"
@@ -219,6 +227,9 @@ class Display:
                     self.first_frame = True
                     continue
                 self.root.fill(Colors.display_colors["white"])
+                if pygame.key.get_focused() and (not self.iconify_state):
+                    self.first_frame = True
+                self.iconify_state = pygame.key.get_focused()
                 line1 = "Game Over!"
                 line2 = f"Score: {self.squares.get_score()}"
                 line3 = f"Level: {self.squares.get_level()}"
