@@ -12,6 +12,11 @@ class Menu:
         self.label_y = 0
         self.width = 300
         self.height = 200
+        self.btn2_x = 0
+        self.btn2_y = 0
+        self.btn2_height = 0
+        self.label2_x = 0
+        self.label2_y = 0
         self.pause = False
 
     def is_paused(self):
@@ -19,6 +24,9 @@ class Menu:
 
     def toggle_pause(self):
         self.pause = not self.pause
+
+    def set_pause(self):
+        self.pause = True
 
     def relocate(self, resolution, font1):
         self.x = round(resolution[0] / 2 - self.width / 2)
@@ -32,9 +40,17 @@ class Menu:
         self.label_x = round(resolution[0] / 2 - font1.size(text)[0] / 2)
         self.btn_height = font1.size(text)[1]
         self.label_y = round(resolution[1] / 2) + 10
+        text = "Restart"
+        self.btn2_y = self.btn_y + self.btn_height + 10
+        self.btn2_height = font1.size(text)[1]
+        self.label2_x = round(resolution[0] / 2 - font1.size(text)[0] / 2)
+        self.label2_y = self.btn_y + self.btn_height + 10
 
     def get_btn_hit_box(self):
         return self.btn_x, self.btn_x + self.btn_width, self.btn_y, self.btn_y + self.btn_height
+
+    def get_btn2_hit_box(self):
+        return self.btn_x, self.btn_x + self.btn_width, self.btn2_y, self.btn2_y + self.btn2_height
 
     def get_rect(self):
         return [self.x, self.y, self.width, self.height]
@@ -44,6 +60,12 @@ class Menu:
 
     def get_button(self):
         return [self.btn_x, self.btn_y, self.btn_width, self.btn_height]
+
+    def get_button2(self):
+        return [self.btn_x, self.btn2_y, self.btn_width, self.btn2_height]
+
+    def get_label2(self):
+        return self.label2_x, self.label2_y
 
     def get_label(self):
         return self.label_x, self.label_y

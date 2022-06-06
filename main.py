@@ -103,11 +103,22 @@ class Display:
                             pos = self.pause_menu.get_btn_hit_box()
                             if pos[0] <= x <= pos[1] and pos[2] <= y <= pos[3]:
                                 self.pause_menu.toggle_pause()
+                            else:
+                                pos = self.pause_menu.get_btn2_hit_box()
+                                if pos[0] <= x <= pos[1] and pos[2] <= y <= pos[3]:
+                                    self.pause_menu.toggle_pause()
+                                    self.squares = Squares.Squares()
+                                    self.frame_count = 30
+                                    self.frame_delay = 30
+                                    self.key_repeat = 0
+                                    self.key_delay = 5
                         else:
                             if 8 <= x <= 28 and self.resolution[1] - 27 <= y <= self.resolution[1] - 13:
                                 self.pause_menu.toggle_pause()
                 self.root.fill(Colors.display_colors["white"])
                 if not self.pause_menu.is_paused():
+                    if not pygame.key.get_focused():
+                        self.pause_menu.set_pause()
                     if not self.squares.has_shape():
                         if self.squares.spawn_new():
                             self.mode = "gg"
@@ -139,6 +150,8 @@ class Display:
                     self.root.blit(font1.render("Game Paused!", True, Colors.display_colors["black"]), self.pause_menu.get_text())
                     pygame.draw.rect(self.root, Colors.display_colors["orange"], self.pause_menu.get_button(), 0)
                     self.root.blit(font1.render("Continue", True, Colors.display_colors["black"]), self.pause_menu.get_label())
+                    pygame.draw.rect(self.root, Colors.display_colors["orange"], self.pause_menu.get_button2(), 0)
+                    self.root.blit(font1.render("Restart", True, Colors.display_colors["black"]), self.pause_menu.get_label2())
                 pygame.display.update()
             elif self.mode == "gg":
                 for event in pygame.event.get():
