@@ -1,8 +1,17 @@
 import os
+import sys
 import pygame
 import Squares
 import Menu
 import Colors
+
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 
 class Display:
@@ -20,12 +29,13 @@ class Display:
         self.first_frame = True
         self.squares = Squares.Squares()
         pygame.init()
-        pygame.display.set_caption("Tetris")
         clock = pygame.time.Clock()
         font1 = pygame.font.SysFont("simhei", 40)
         font2 = pygame.font.SysFont("simhei", 70)
-        background_music = pygame.mixer.Sound(os.path.normpath("./Sounds/Tetris.ogg"))
+        background_music = pygame.mixer.Sound(resource_path(os.path.normpath("./Sounds/Tetris.ogg")))
         background_music.play(-1)
+        pygame.display.set_caption("Tetris")
+        pygame.display.set_icon(pygame.image.load(resource_path(os.path.normpath("./Images/Icon.png"))))
         self.root = pygame.display.set_mode(self.resolution, pygame.RESIZABLE)
         while game_run:
             clock.tick(60)
