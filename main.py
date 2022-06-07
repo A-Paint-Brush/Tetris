@@ -64,6 +64,8 @@ class Display:
                         if round(self.resolution[0] / 2 - 100) <= x <= round(self.resolution[0] / 2 - 100) + 200 and \
                                 self.resolution[1] - 70 <= y <= self.resolution[1] - 70 + 60:
                             self.mode = "game"
+                    elif event.type == pygame.WINDOWMOVED:
+                        self.first_frame = True
                     self.root.fill(Colors.display_colors["white"])
                     if pygame.key.get_focused() and (not self.iconify_state):
                         self.first_frame = True
@@ -143,6 +145,8 @@ class Display:
                             if 8 <= x <= 28 and self.resolution[1] - 27 <= y <= self.resolution[1] - 13:
                                 self.pause_menu.toggle_pause()
                                 self.first_frame = True
+                    elif event.type == pygame.WINDOWMOVED:
+                        self.first_frame = True
                 self.root.fill(Colors.display_colors["white"])
                 if pygame.key.get_focused() and (not self.iconify_state):
                     self.first_frame = True
@@ -223,6 +227,8 @@ class Display:
                             self.key_repeat = 0
                             self.key_delay = 5
                             self.mode = "title"
+                    elif event.type == pygame.WINDOWMOVED:
+                        self.first_frame = True
                 if self.mode == "title":
                     self.first_frame = True
                     continue
