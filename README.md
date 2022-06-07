@@ -4,7 +4,7 @@ This is a simple Tetris game made in Python. The background music was downloaded
 
 Download Windows Executable: [Tetris.exe](https://github.com/A-Paint-Brush/Tetris/raw/main/Releases/Tetris.exe)
 
-![Game Screenshot](https://user-images.githubusercontent.com/96622265/172197554-e06321f3-9276-4bd8-b020-2d9268b73856.png)
+![Game Screenshot](https://user-images.githubusercontent.com/96622265/172319500-262935a3-f1a1-48d1-9edd-cbe7c13cef05.png)
 
 ### Controls
 
