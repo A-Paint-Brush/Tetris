@@ -192,6 +192,8 @@ class Display:
                             self.key_repeat = 0
                             self.key_delay = 5
                             self.mode = "title"
+                if self.mode == "title":
+                    continue
                 self.root.fill(Colors.display_colors["white"])
                 line1 = "Game Over!"
                 line2 = f"Score: {self.squares.get_score()}"
