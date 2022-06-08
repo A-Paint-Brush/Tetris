@@ -25,9 +25,6 @@ class Display:
         self.key_delay = 5
         self.pause_menu = Menu.Menu()
         self.mode = "title"
-        self.update_rect = []
-        self.first_frame = True
-        self.iconify_state = True
         self.squares = Squares.Squares()
         pygame.init()
         clock = pygame.time.Clock()
@@ -40,7 +37,6 @@ class Display:
         self.root = pygame.display.set_mode(self.resolution, pygame.RESIZABLE)
         while game_run:
             clock.tick(60)
-            self.update_rect = []
             if self.mode == "title":
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -58,30 +54,18 @@ class Display:
                         self.resolution = (w, h)
                         if resize:
                             pygame.display.set_mode((w, h), pygame.RESIZABLE)
-                        self.first_frame = True
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         x, y = pygame.mouse.get_pos()
                         if round(self.resolution[0] / 2 - 100) <= x <= round(self.resolution[0] / 2 - 100) + 200 and \
                                 self.resolution[1] - 70 <= y <= self.resolution[1] - 70 + 60:
                             self.mode = "game"
-                    elif event.type == pygame.WINDOWMOVED:
-                        self.first_frame = True
                     self.root.fill(Colors.display_colors["white"])
-                    if pygame.key.get_focused() and (not self.iconify_state):
-                        self.first_frame = True
-                    self.iconify_state = pygame.key.get_focused()
                     title = "Tetris"
                     text2 = "Start"
                     self.root.blit(font2.render(title, True, Colors.display_colors["black"]), (round(self.resolution[0] / 2 - font2.size(title)[0] / 2), 20))
                     pygame.draw.rect(self.root, Colors.display_colors["orange"], [round(self.resolution[0] / 2 - 100), self.resolution[1] - 70, 200, 60], 0)
                     self.root.blit(font1.render(text2, True, Colors.display_colors["black"]), (round(self.resolution[0] / 2 - font1.size(text2)[0] / 2), round(self.resolution[1] - 70 + (60 / 2) - (font1.size(text2)[1] / 2))))
-                    if self.first_frame:
-                        pygame.display.update()
-                        self.first_frame = False
-                    else:
-                        pygame.display.update(self.update_rect)
-                    if self.mode == "game":
-                        self.first_frame = True
+                    pygame.display.update()
             elif self.mode == "game":
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -99,7 +83,6 @@ class Display:
                         self.resolution = (w, h)
                         if resize:
                             pygame.display.set_mode((w, h), pygame.RESIZABLE)
-                        self.first_frame = True
                     elif event.type == pygame.KEYDOWN:
                         if not self.pause_menu.is_paused():
                             if event.key == pygame.K_LEFT:
@@ -130,7 +113,6 @@ class Display:
                             pos = self.pause_menu.get_btn_hit_box()
                             if pos[0] <= x <= pos[1] and pos[2] <= y <= pos[3]:
                                 self.pause_menu.toggle_pause()
-                                self.first_frame = True
                             else:
                                 pos = self.pause_menu.get_btn2_hit_box()
                                 if pos[0] <= x <= pos[1] and pos[2] <= y <= pos[3]:
@@ -140,21 +122,13 @@ class Display:
                                     self.frame_delay = 30
                                     self.key_repeat = 0
                                     self.key_delay = 5
-                                    self.first_frame = True
                         else:
                             if 8 <= x <= 28 and self.resolution[1] - 27 <= y <= self.resolution[1] - 13:
                                 self.pause_menu.toggle_pause()
-                                self.first_frame = True
-                    elif event.type == pygame.WINDOWMOVED:
-                        self.first_frame = True
                 self.root.fill(Colors.display_colors["white"])
-                if pygame.key.get_focused() and (not self.iconify_state):
-                    self.first_frame = True
-                self.iconify_state = pygame.key.get_focused()
                 if not self.pause_menu.is_paused():
-                    if not self.iconify_state:
+                    if not pygame.key.get_focused():
                         self.pause_menu.set_pause()
-                        self.first_frame = True
                     if not self.squares.has_shape():
                         if self.squares.spawn_new():
                             self.mode = "gg"
@@ -170,11 +144,9 @@ class Display:
                 self.draw_pixels()
                 self.root.blit(font1.render(f"Score: {self.squares.get_score()}", True, Colors.display_colors["black"]), (20, 5))
                 size = font1.size(f"Score: {self.squares.get_score()}")
-                self.update_rect.append(pygame.Rect(20, 5, 20 + size[0], 5 + size[1]))
                 text = f"Level: {self.squares.get_level()}"
                 self.root.blit(font1.render(text, True, Colors.display_colors["black"]), (self.resolution[0] - font1.size(text)[0] - 20, 5))
                 size = font1.size(text)
-                self.update_rect.append(pygame.Rect(self.resolution[0] - size[0] - 20, 5, self.resolution[0] - 20, 5 + size[1]))
                 pygame.draw.rect(self.root, Colors.display_colors["black"], [8, self.resolution[1] - 27, 20, 5], 0)
                 pygame.draw.rect(self.root, Colors.display_colors["black"], [8, self.resolution[1] - 20, 20, 5], 0)
                 pygame.draw.rect(self.root, Colors.display_colors["black"], [8, self.resolution[1] - 13, 20, 5], 0)
@@ -192,13 +164,7 @@ class Display:
                     self.root.blit(font1.render("Continue", True, Colors.display_colors["black"]), self.pause_menu.get_label())
                     pygame.draw.rect(self.root, Colors.display_colors["orange"], self.pause_menu.get_button2(), 0)
                     self.root.blit(font1.render("Restart", True, Colors.display_colors["black"]), self.pause_menu.get_label2())
-                if self.first_frame:
-                    pygame.display.update()
-                    self.first_frame = False
-                else:
-                    pygame.display.update(self.update_rect)
-                if self.mode == "gg":
-                    self.first_frame = True
+                pygame.display.update()
             elif self.mode == "gg":
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -216,7 +182,6 @@ class Display:
                         self.resolution = (w, h)
                         if resize:
                             pygame.display.set_mode((w, h), pygame.RESIZABLE)
-                        self.first_frame = True
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         x, y = pygame.mouse.get_pos()
                         if round(self.resolution[0] / 2 - 100) <= x <= round(self.resolution[0] / 2 - 100) + 200 and \
@@ -227,15 +192,7 @@ class Display:
                             self.key_repeat = 0
                             self.key_delay = 5
                             self.mode = "title"
-                    elif event.type == pygame.WINDOWMOVED:
-                        self.first_frame = True
-                if self.mode == "title":
-                    self.first_frame = True
-                    continue
                 self.root.fill(Colors.display_colors["white"])
-                if pygame.key.get_focused() and (not self.iconify_state):
-                    self.first_frame = True
-                self.iconify_state = pygame.key.get_focused()
                 line1 = "Game Over!"
                 line2 = f"Score: {self.squares.get_score()}"
                 line3 = f"Level: {self.squares.get_level()}"
@@ -246,11 +203,7 @@ class Display:
                 self.root.blit(font1.render(line3, True, Colors.display_colors["black"]), (round(self.resolution[0] / 2 - align / 2), round(self.resolution[1] / 2)))
                 pygame.draw.rect(self.root, Colors.display_colors["orange"], [round(self.resolution[0] / 2 - 100), self.resolution[1] - 70, 200, 60], 0)
                 self.root.blit(font1.render(line4, True, Colors.display_colors["black"]), (round(self.resolution[0] / 2 - font1.size(line4)[0] / 2), round(self.resolution[1] - 70 + (60 / 2) - (font1.size(line4)[1] / 2))))
-                if self.first_frame:
-                    pygame.display.update()
-                    self.first_frame = False
-                else:
-                    pygame.display.update(self.update_rect)
+                pygame.display.update()
         pygame.quit()
 
     def draw_pixels(self):
@@ -265,7 +218,6 @@ class Display:
                 x = length * column + round(self.resolution[0] / 2 - length * width / 2)
                 y = length * row + 30
                 pygame.draw.rect(self.root, squares[row][column], [x + 2, y + 2, length - 4, length - 4], 0)
-        self.update_rect.append(pygame.Rect(round(self.resolution[0] / 2 - length * width / 2), 30, length * width - 1 + round(self.resolution[0] / 2 - length * width / 2), length * height - 1))
 
 
 if __name__ == "__main__":
