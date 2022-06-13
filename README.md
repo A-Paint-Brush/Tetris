@@ -2,7 +2,8 @@
 
 This is a simple Tetris game made in Python. The background music was downloaded from [archive.org](https://archive.org/details/TetrisThemeMusic) .
 
-Download Windows Executable: [Tetris.exe](https://github.com/A-Paint-Brush/Tetris/raw/main/Releases/Tetris.exe)
+Download Windows Executable: [Tetris.exe](https://github.com/A-Paint-Brush/Tetris/raw/main/Releases/Tetris.exe)  
+Download Mac App: [Tetris.dmg](https://github.com/A-Paint-Brush/Tetris/raw/main/Releases/Tetris.dmg)
 
 ![Game Screenshot](https://user-images.githubusercontent.com/96622265/172319500-262935a3-f1a1-48d1-9edd-cbe7c13cef05.png)
 
